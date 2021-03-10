@@ -6,8 +6,8 @@ from pymongo import MongoClient
 
 app = Flask(__name__)
 app.config.from_object('config')
-mongo_client = MongoClient(app.config['MONGOALCHEMY_SERVER'], app.config['MONGOALCHEMY_PORT'])
-audio_db = mongo_client[app.config['MONGOALCHEMY_DATABASE']]
+mongo_client = MongoClient(app.config['MONGO_SERVER'], app.config['MONGO_PORT'])
+audio_db = mongo_client[app.config['MONGO_DATABASE']]
 
 api = Api(app)
 import audio_app.routes.routes
