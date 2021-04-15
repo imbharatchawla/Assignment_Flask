@@ -11,7 +11,6 @@ class MediaServices:
     def getMedia(self, audioType, audioID=None):
         if audioType == 'song':
             if audioID is not None:
-                print('here')
                 find_specific_media = audio_db.Song.find_one({"id": int(audioID)})
                 return json.loads(json_util.dumps(find_specific_media))
             else:
@@ -20,22 +19,45 @@ class MediaServices:
                 for all in find_all_media:
                     all_media.append(all)
                 return json.loads(json_util.dumps(all_media))
+        
+        if audioType == 'audiobook':
+            if audioID is not None:
+                find_specific_media = audio_db.Audiobook.find_one({"id": int(audioID)})
+                return json.loads(json_util.dumps(find_specific_media))
+            else:
+                all_media = []
+                find_all_media = audio_db.Audiobook.find({})
+                for all in find_all_media:
+                    all_media.append(all)
+                return json.loads(json_util.dumps(all_media))
+        
+        if audioType == 'podcast':
+            if audioID is not None:
+                find_specific_media = audio_db.Podcast.find_one({"id": int(audioID)})
+                return json.loads(json_util.dumps(find_specific_media))
+            else:
+                all_media = []
+                find_all_media = audio_db.Podcast.find({})
+                for all in find_all_media:
+                    all_media.append(all)
+                return json.loads(json_util.dumps(all_media))
 
     def uploadMedia(self, audioType, data):
+
         if audioType.lower() == 'song':
             find_same_audio = audio_db.Song.find_one({"id": data['id']})
             if find_same_audio:
-                return {"message": "Duplicate Media with same ID found" }
+                return {"message": "Duplicate Media with same ID found, Please use Unique ID" }
             result = audio_db.Song.insert(data)
         elif audioType.lower() == 'podcast':
             find_same_audio = audio_db.Podcast.find_one({"id": data['id']})
             if find_same_audio:
-                return {"message": "Duplicate Media with same ID found" }
+                return {"message": "Duplicate Media with same ID found, Please use Unique ID" }
             result = audio_db.Podcast.insert(data)
         elif audioType.lower() == 'audiobook':
             find_same_audio = audio_db.Audiobook.find_one({"id": data['id']})
             if find_same_audio:
-                return {"message": "Duplicate Media with same ID found" }
+                return {"message": "Duplicate Media with same ID found, Please use Unique ID" }
             result = audio_db.Audiobook.insert(data)
 
         if result:
@@ -50,15 +72,20 @@ class MediaServices:
             find_audio = audio_db.Song.find_one_and_delete({"id": audioID})
             if find_audio:
                 return {"message": "Media with ID {} deleted successfully" .format(audioID)}
+            else:
+                return {'error': 'Media not found'}
         elif audioType.lower() == 'podcast':
             find_audio = audio_db.Podcast.find_one_and_delete({"id": audioID})
-            print(find_audio, type(audioID))
             if find_audio:
                 return {"message": "Media with ID {} deleted successfully" .format(audioID)}
+            else:
+                return {'error': 'Media not found'}
         elif audioType.lower() == 'audiobook':
             find_audio = audio_db.Audiobook.find_one_and_delete({"id": audioID})
             if find_audio:
                 return {"message": "Media with ID {} deleted successfully" .format(audioID)}
+            else:
+                return {'error': 'Media not found'}
         else:
             return {"message": "Something went wrong"}
     
